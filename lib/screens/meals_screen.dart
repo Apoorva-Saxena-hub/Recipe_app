@@ -81,17 +81,18 @@ class _MealsScreenState extends State<MealsScreen> {
             meal.id.toString(),
           );
 
-          if (recipe.spoonacularSourceUrl.isEmpty) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text('Recipe URL not found')));
+          if (recipe.instructions.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Recipe instructions not found')),
+            );
             return;
           }
 
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => RecipeScreen(mealType: mealType, recipe: recipe),
+              builder: (_) =>
+                  RecipeDetailScreen(mealType: mealType, recipe: recipe),
             ),
           );
         } catch (e) {

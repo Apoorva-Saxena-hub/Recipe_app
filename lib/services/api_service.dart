@@ -49,26 +49,19 @@ class APIService {
 
   /// Fetch Recipe Details
   Future<Recipe> fetchRecipe(String id) async {
-    final Map<String, String> parameters = {
+    final uri = Uri.https(_baseUrl, '/recipes/$id/information', {
       'includeNutrition': 'false',
       'apiKey': _apiKey,
-    };
+    });
 
-    final uri = Uri.https(_baseUrl, '/recipes/$id/information', parameters);
     final headers = {HttpHeaders.contentTypeHeader: 'application/json'};
 
-    try {
-      final response = await http.get(uri, headers: headers);
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        return Recipe.fromMap(data);
-      } else {
-        throw Exception(
-          'Failed to load recipe. Status: ${response.statusCode}',
-        );
-      }
-    } catch (error) {
-      throw Exception('Error fetching recipe: $error');
+    final response = await http.get(uri, headers: headers);
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return Recipe.fromMap(data);
+    } else {
+      throw Exception('Failed to fetch recipe');
     }
   }
 }
