@@ -26,16 +26,36 @@ class _SearchScreenState extends State<SearchScreen> {
 
   double _targetCalories = 2250;
   String _diet = 'None';
-  void _searchMealPlan() async {
-    MealPlan mealPlan = await APIService.instance.generateMealPlan(
+void _searchMealPlan() async {
+  try {
+    final mealPlan = await APIService.instance.generateMealPlan(
       targetCalories: _targetCalories.toInt(),
       diet: _diet,
     );
+
+    print("MealPlan received: ${mealPlan.meals.length} meals");
+
+    if (mealPlan.meals.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No meals found for your selection')),
+      );
+      return;
+    }
+
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => MealsScreen(mealPlan: mealPlan)),
+      MaterialPageRoute(
+        builder: (_) => MealsScreen(mealPlan: mealPlan),
+      ),
+    );
+  } catch (e) {
+    print('Error: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to generate meal plan')),
     );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

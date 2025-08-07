@@ -17,13 +17,28 @@ class MealPlan {
 
   factory MealPlan.fromMap(Map<String, dynamic> map) {
     List<Meal> meals = [];
-    map['meals'].forEach((mealMap) => meals.add(Meal.fromMap(mealMap)));
+
+    if (map['meals'] != null && map['meals'] is List) {
+      for (var mealMap in map['meals']) {
+        meals.add(Meal.fromMap(mealMap));
+      }
+    }
+
+    final nutrients = map['nutrients'] ?? {};
+
     return MealPlan(
       meals: meals,
-      calories: map['nutrients']['calories'],
-      carbs: map['nutrients']['carbs'],
-      fat: map['nutrients']['fat'],
-      protein: map['nutrients']['protein'],
+      calories: _toDouble(nutrients['calories']),
+      carbs: _toDouble(nutrients['carbs']),
+      fat: _toDouble(nutrients['fat']),
+      protein: _toDouble(nutrients['protein']),
     );
+  }
+
+  static double _toDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0.0;
+    return 0.0;
   }
 }

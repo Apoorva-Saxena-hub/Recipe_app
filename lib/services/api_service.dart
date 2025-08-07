@@ -20,11 +20,11 @@ class APIService {
     final Map<String, String> parameters = {
       'timeFrame': 'day',
       'targetCalories': targetCalories.toString(),
-      'diet': diet == 'None' ? '' : diet,
+      'diet': diet == 'None' ? '' : diet.toLowerCase(),
       'apiKey': _apiKey,
     };
 
-    final uri = Uri.https(_baseUrl, '/recipes/mealPlans/generate', parameters);
+    final uri = Uri.https(_baseUrl, '/mealplanner/generate', parameters);
     print('Request URL: $uri');
 
     final headers = {HttpHeaders.contentTypeHeader: 'application/json'};

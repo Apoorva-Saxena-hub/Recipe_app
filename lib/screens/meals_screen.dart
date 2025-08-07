@@ -75,16 +75,31 @@ class _MealsScreenState extends State<MealsScreen> {
 
     return GestureDetector(
       onTap: () async {
-        // TODO: Add onTap logic if needed
-        Recipe recipe = await APIService.instance.fetchRecipe(
-          meal.id.toString(),
-        );
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => RecipeScreen(mealType: mealType, recipe: recipe),
-          ),
-        );
+        try {
+          print("Tapped meal: ${meal.title}, ID: ${meal.id}");
+          Recipe recipe = await APIService.instance.fetchRecipe(
+            meal.id.toString(),
+          );
+
+          if (recipe.spoonacularSourceUrl.isEmpty) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Recipe URL not found')));
+            return;
+          }
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => RecipeScreen(mealType: mealType, recipe: recipe),
+            ),
+          );
+        } catch (e) {
+          print("Error fetching recipe: $e");
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Failed to load recipe')));
+        }
       },
       child: Stack(
         alignment: Alignment.center,
