@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_app/models/meal_model.dart' show Meal;
 import 'package:recipe_app/models/meal_plan_model.dart';
+import 'package:recipe_app/models/recipe_model.dart';
+import 'package:recipe_app/screens/recipe_screen.dart';
+import 'package:recipe_app/services/api_service.dart';
 
 class MealsScreen extends StatefulWidget {
   final MealPlan mealPlan;
@@ -67,34 +70,78 @@ class _MealsScreenState extends State<MealsScreen> {
     );
   }
 
-  _buildMealCard(Meal meal, int index) {
+  Widget _buildMealCard(Meal meal, int index) {
     String mealType = _mealType(index);
-    return Stack(
-      alignment: Alignment.center,
-      children: <Widget>[
-        Container(
-          height: 220.0,
-          width: double.infinity,
-          margin: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-          padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            image: DecorationImage(
-              image: NetworkImage(meal.imageUrl),
-              fit: BoxFit.cover,
-            ),
-            borderRadius: BorderRadius.circular(15.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12,
-                offset: Offset(0, 2),
-                blurRadius: 6.0,
-              ),
-            ],
+
+    return GestureDetector(
+      onTap: () async {
+        // TODO: Add onTap logic if needed
+        Recipe recipe = await APIService.instance.fetchRecipe(
+          meal.id.toString(),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => RecipeScreen(mealType: mealType, recipe: recipe),
           ),
-        ),
-        Container(margin: EdgeInsets.all(60.0), padding: EdgeInsets.all(10.0)),
-      ],
+        );
+      },
+      child: Stack(
+        alignment: Alignment.center,
+        children: <Widget>[
+          // Background image container
+          Container(
+            height: 220.0,
+            width: double.infinity,
+            margin: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+            padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              image: DecorationImage(
+                image: NetworkImage(meal.imageUrl),
+                fit: BoxFit.cover,
+              ),
+              borderRadius: BorderRadius.circular(15.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  offset: Offset(0, 2),
+                  blurRadius: 6.0,
+                ),
+              ],
+            ),
+          ),
+
+          // Text overlay container
+          Container(
+            margin: EdgeInsets.all(60.0),
+            padding: EdgeInsets.all(10.0),
+            decoration: BoxDecoration(
+              color: Colors.white70,
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  mealType,
+                  style: TextStyle(
+                    fontSize: 30.0,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                SizedBox(height: 5.0),
+                Text(
+                  meal.title,
+                  style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
